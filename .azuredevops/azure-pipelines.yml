@@ -1,0 +1,178 @@
+# Azure DevOps Pipeline for Pulumi Deployments
+#
+# This pipeline implements the four-eyes principle:
+# 1. Developer creates PR with infrastructure changes
+# 2. Pipeline runs `pulumi preview` automatically
+# 3. Second developer reviews preview output in PR
+# 4. Merge to main triggers `pulumi up`
+#
+# Prerequisites:
+# - Pulumi Cloud account with Deployments enabled
+# - Azure DevOps service connection to Pulumi Cloud
+# - ESC environment configured with Azure OIDC credentials
+
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - infrastructure/**
+      - templates/**
+
+pr:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - infrastructure/**
+      - templates/**
+
+variables:
+  - name: PULUMI_ORG
+    value: 'demo'
+  - name: PULUMI_PROJECT
+    value: 'team-onboarding'
+  - name: PULUMI_STACK
+    value: 'team-alpha'
+  - name: WORKING_DIRECTORY
+    value: 'infrastructure/team-onboarding'
+
+stages:
+  # =============================================================================
+  # Preview Stage - Runs on PR
+  # =============================================================================
+  - stage: Preview
+    displayName: 'Pulumi Preview'
+    condition: eq(variables['Build.Reason'], 'PullRequest')
+    jobs:
+      - job: Preview
+        displayName: 'Run Pulumi Preview'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            displayName: 'Checkout code'
+
+          - task: UsePythonVersion@0
+            displayName: 'Use Python 3.11'
+            inputs:
+              versionSpec: '3.11'
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt
+            displayName: 'Install dependencies'
+            workingDirectory: $(WORKING_DIRECTORY)
+
+          - task: Pulumi@1
+            displayName: 'Pulumi Preview'
+            inputs:
+              command: 'preview'
+              stack: '$(PULUMI_ORG)/$(PULUMI_PROJECT)/$(PULUMI_STACK)'
+              workingDirectory: '$(WORKING_DIRECTORY)'
+              # Use Pulumi Deployments for preview
+              useDeployments: true
+            env:
+              PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+
+          - script: |
+              echo "## Pulumi Preview Results" >> $(System.DefaultWorkingDirectory)/preview-results.md
+              echo "" >> $(System.DefaultWorkingDirectory)/preview-results.md
+              echo "Preview completed. Review the changes above before approving the PR." >> $(System.DefaultWorkingDirectory)/preview-results.md
+              echo "" >> $(System.DefaultWorkingDirectory)/preview-results.md
+              echo "### Four-Eyes Principle" >> $(System.DefaultWorkingDirectory)/preview-results.md
+              echo "- [ ] Changes reviewed by second developer" >> $(System.DefaultWorkingDirectory)/preview-results.md
+              echo "- [ ] Policy compliance verified" >> $(System.DefaultWorkingDirectory)/preview-results.md
+              echo "- [ ] Cost impact assessed" >> $(System.DefaultWorkingDirectory)/preview-results.md
+            displayName: 'Generate review checklist'
+
+          - task: PublishPipelineArtifact@1
+            displayName: 'Publish preview results'
+            inputs:
+              targetPath: '$(System.DefaultWorkingDirectory)/preview-results.md'
+              artifact: 'preview-results'
+
+  # =============================================================================
+  # Deploy Stage - Runs on merge to main
+  # =============================================================================
+  - stage: Deploy
+    displayName: 'Pulumi Deploy'
+    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main'), ne(variables['Build.Reason'], 'PullRequest'))
+    jobs:
+      - deployment: Deploy
+        displayName: 'Deploy Infrastructure'
+        pool:
+          vmImage: 'ubuntu-latest'
+        environment: 'production'  # Requires approval in Azure DevOps
+        strategy:
+          runOnce:
+            deploy:
+              steps:
+                - checkout: self
+                  displayName: 'Checkout code'
+
+                - task: UsePythonVersion@0
+                  displayName: 'Use Python 3.11'
+                  inputs:
+                    versionSpec: '3.11'
+
+                - script: |
+                    python -m pip install --upgrade pip
+                    pip install -r requirements.txt
+                  displayName: 'Install dependencies'
+                  workingDirectory: $(WORKING_DIRECTORY)
+
+                - task: Pulumi@1
+                  displayName: 'Pulumi Up'
+                  inputs:
+                    command: 'up'
+                    stack: '$(PULUMI_ORG)/$(PULUMI_PROJECT)/$(PULUMI_STACK)'
+                    workingDirectory: '$(WORKING_DIRECTORY)'
+                    args: '--yes'
+                    # Use Pulumi Deployments for up
+                    useDeployments: true
+                  env:
+                    PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)
+
+  # =============================================================================
+  # Policy Check Stage - Runs on all builds
+  # =============================================================================
+  - stage: PolicyCheck
+    displayName: 'Policy Compliance'
+    dependsOn: []  # Run in parallel
+    jobs:
+      - job: PolicyCheck
+        displayName: 'Run Policy Pack'
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+            displayName: 'Checkout code'
+
+          - task: UsePythonVersion@0
+            displayName: 'Use Python 3.11'
+            inputs:
+              versionSpec: '3.11'
+
+          - script: |
+              python -m pip install --upgrade pip
+              pip install -r requirements.txt
+            displayName: 'Install policy dependencies'
+            workingDirectory: 'policies/azure-compliance'
+
+          - script: |
+              pip install -r requirements.txt
+            displayName: 'Install stack dependencies'
+            workingDirectory: $(WORKING_DIRECTORY)
+
+          - task: Pulumi@1
+            displayName: 'Pulumi Preview with Policy Pack'
+            inputs:
+              command: 'preview'
+              stack: '$(PULUMI_ORG)/$(PULUMI_PROJECT)/$(PULUMI_STACK)'
+              workingDirectory: '$(WORKING_DIRECTORY)'
+              args: '--policy-pack ../../policies/azure-compliance'
+            env:
+              PULUMI_ACCESS_TOKEN: $(PULUMI_ACCESS_TOKEN)

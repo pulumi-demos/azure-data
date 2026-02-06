@@ -1,0 +1,58 @@
+# ESC Environment: spoke-template
+# Purpose: Template for spoke subscription configuration
+# Usage: Copy and customize for each team/spoke subscription
+#
+# This environment provides:
+# - Spoke-specific subscription ID
+# - Spoke network CIDR allocation
+# - Team-specific configuration
+#
+# Pattern: Subscription as parameter
+# Each team gets their own spoke environment that inherits from this template
+# The subscription ID is passed as a parameter, enabling multi-subscription deployments
+
+imports:
+  # Inherit Azure credentials and hub network config
+  - azure-base
+  - hub-network
+
+values:
+  # Spoke configuration - OVERRIDE THESE IN TEAM-SPECIFIC ENVIRONMENTS
+  spoke:
+    # Team/project identifier
+    teamName: "TEAM_NAME"
+    
+    # Target subscription for this spoke
+    subscriptionId: "SPOKE_SUBSCRIPTION_ID"
+    
+    # Network allocation for this spoke (must not overlap with hub or other spokes)
+    network:
+      cidr: "10.1.0.0/16"  # Example: Team Alpha gets 10.1.0.0/16
+      # Databricks requires two /24 subnets minimum
+      databricksPrivateCidr: "10.1.0.0/24"
+      databricksPublicCidr: "10.1.1.0/24"
+    
+    # Environment (dev, staging, prod)
+    environment: "dev"
+    
+    # Cost center for chargeback
+    costCenter: "CC-UNASSIGNED"
+
+  # Override subscription for this spoke
+  azure:
+    subscriptionId: ${spoke.subscriptionId}
+
+  # Expose as Pulumi config
+  pulumiConfig:
+    # Override subscription for azure-native provider
+    azure-native:subscriptionId: ${spoke.subscriptionId}
+    
+    # Spoke-specific config
+    spoke:teamName: ${spoke.teamName}
+    spoke:subscriptionId: ${spoke.subscriptionId}
+    spoke:networkCidr: ${spoke.network.cidr}
+    spoke:environment: ${spoke.environment}
+    spoke:costCenter: ${spoke.costCenter}
+    
+    # Hub reference for peering
+    spoke:hubVnetId: ${hub.vnet.id}

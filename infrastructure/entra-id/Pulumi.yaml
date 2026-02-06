@@ -1,0 +1,8 @@
+name: entra-id
+description: |
+  Entra ID (Azure AD) management for the Azure Data Platform.
+  Creates app registrations and service principals for Databricks access.
+runtime:
+  name: python
+  options:
+    virtualenv: venv

@@ -1,0 +1,6 @@
+name: hub-network
+description: Hub network infrastructure for the Azure Data Platform (hub/spoke architecture)
+runtime:
+  name: python
+  options:
+    virtualenv: venv

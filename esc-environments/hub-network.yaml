@@ -1,0 +1,50 @@
+# ESC Environment: hub-network
+# Purpose: Hub network configuration for hub/spoke architecture
+# Usage: Import this environment to get hub VNet references
+#
+# This environment provides:
+# - Hub VNet ID for spoke peering
+# - Hub resource group name
+# - DNS server IPs (if using custom DNS)
+# - Shared services configuration
+#
+# Pattern: Reference existing Bicep-deployed resources
+# The hub network may already exist (deployed via Bicep/ARM)
+# This environment exposes those resources to Pulumi stacks
+
+imports:
+  # Inherit Azure credentials
+  - azure-base
+
+values:
+  # Hub network configuration
+  # These values reference existing infrastructure (e.g., deployed via Bicep)
+  hub:
+    # Resource group containing hub resources
+    resourceGroupName: "rg-hub-network-prod"
+    
+    # Hub VNet details
+    vnet:
+      name: "vnet-hub-prod"
+      # Full resource ID for peering
+      id: "/subscriptions/${azure.subscriptionId}/resourceGroups/rg-hub-network-prod/providers/Microsoft.Network/virtualNetworks/vnet-hub-prod"
+      addressSpace: "10.0.0.0/16"
+    
+    # DNS configuration (if using Azure Private DNS or custom DNS)
+    dns:
+      servers:
+        - "10.0.0.4"  # Example: Azure Firewall DNS proxy
+        - "10.0.0.5"
+    
+    # Shared services subnet (for private endpoints, etc.)
+    sharedServicesSubnet:
+      name: "snet-shared-services"
+      id: "/subscriptions/${azure.subscriptionId}/resourceGroups/rg-hub-network-prod/providers/Microsoft.Network/virtualNetworks/vnet-hub-prod/subnets/snet-shared-services"
+      addressPrefix: "10.0.1.0/24"
+
+  # Expose as Pulumi config for easy consumption
+  pulumiConfig:
+    hub:resourceGroupName: ${hub.resourceGroupName}
+    hub:vnetId: ${hub.vnet.id}
+    hub:vnetName: ${hub.vnet.name}
+    hub:dnsServers: ${hub.dns.servers}

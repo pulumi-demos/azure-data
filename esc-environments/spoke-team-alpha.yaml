@@ -1,0 +1,39 @@
+# ESC Environment: spoke-team-alpha
+# Purpose: Spoke configuration for Team Alpha (Data Science)
+# Usage: pulumi config env add azure-data/spoke-team-alpha
+#
+# This is an example of a team-specific spoke environment.
+# Each team gets their own environment with:
+# - Dedicated subscription
+# - Unique network CIDR allocation
+# - Team-specific tags and cost center
+
+imports:
+  # Inherit from spoke template (which inherits azure-base and hub-network)
+  - spoke-template
+
+values:
+  # Team Alpha specific configuration
+  spoke:
+    teamName: "team-alpha"
+    
+    # Team Alpha's dedicated subscription
+    subscriptionId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    
+    # Network allocation for Team Alpha
+    network:
+      cidr: "10.1.0.0/16"
+      databricksPrivateCidr: "10.1.0.0/24"
+      databricksPublicCidr: "10.1.1.0/24"
+    
+    # Environment
+    environment: "dev"
+    
+    # Cost center for Team Alpha
+    costCenter: "CC-DATA-SCIENCE-001"
+
+  # Additional team-specific config
+  pulumiConfig:
+    team:name: "Data Science Team Alpha"
+    team:owner: "alice@example.com"
+    team:slack: "#team-alpha-infra"
