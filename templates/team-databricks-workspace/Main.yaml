@@ -1,0 +1,179 @@
+# Team Databricks Workspace - YAML Template
+#
+# This template demonstrates no-code deployment using Pulumi YAML.
+# Teams can deploy a compliant Databricks workspace without writing code.
+#
+# Usage:
+#   1. New Project Wizard: Select this template in Pulumi Cloud
+#   2. Git-based: Clone and run `pulumi up`
+#   3. CLI: `pulumi new https://github.com/pulumi-demos/azure-data/templates/team-databricks-workspace`
+
+# Configuration from template inputs
+configuration:
+  teamName:
+    type: String
+    default: my-team
+  environment:
+    type: String
+    default: dev
+  costCenter:
+    type: String
+    default: CC-UNASSIGNED
+  spokeCidr:
+    type: String
+    default: "10.1.0.0/16"
+  location:
+    type: String
+    default: westeurope
+  hubStackRef:
+    type: String
+    default: demo/hub-network/dev
+  azure-native:subscriptionId:
+    type: String
+
+# Variables for computed values
+variables:
+  # Get hub VNet ID from stack reference
+  hubVnetId:
+    fn::invoke:
+      function: pulumi:pulumi:stackReference
+      arguments:
+        name: ${hubStackRef}
+      return: vnetId
+  
+  # Compliance tags
+  tags:
+    team: ${teamName}
+    environment: ${environment}
+    cost-center: ${costCenter}
+    managed-by: pulumi
+    template: team-databricks-workspace
+
+# Resources
+resources:
+  # Resource Group for the team
+  resourceGroup:
+    type: azure-native:resources:ResourceGroup
+    properties:
+      resourceGroupName: rg-${teamName}-${environment}
+      location: ${location}
+      tags: ${tags}
+
+  # Network Security Group for private subnet
+  privateNsg:
+    type: azure-native:network:NetworkSecurityGroup
+    properties:
+      networkSecurityGroupName: nsg-dbw-private-${teamName}-${environment}
+      resourceGroupName: ${resourceGroup.name}
+      location: ${location}
+      tags: ${tags}
+
+  # Network Security Group for public subnet
+  publicNsg:
+    type: azure-native:network:NetworkSecurityGroup
+    properties:
+      networkSecurityGroupName: nsg-dbw-public-${teamName}-${environment}
+      resourceGroupName: ${resourceGroup.name}
+      location: ${location}
+      tags: ${tags}
+
+  # Spoke VNet
+  spokeVnet:
+    type: azure-native:network:VirtualNetwork
+    properties:
+      virtualNetworkName: vnet-${teamName}-${environment}
+      resourceGroupName: ${resourceGroup.name}
+      location: ${location}
+      addressSpace:
+        addressPrefixes:
+          - ${spokeCidr}
+      tags: ${tags}
+
+  # Databricks private subnet
+  privateSubnet:
+    type: azure-native:network:Subnet
+    properties:
+      subnetName: databricks-private
+      resourceGroupName: ${resourceGroup.name}
+      virtualNetworkName: ${spokeVnet.name}
+      addressPrefix: "10.1.0.0/24"  # First /24 of spoke CIDR
+      networkSecurityGroup:
+        id: ${privateNsg.id}
+      delegations:
+        - name: databricks-delegation
+          serviceName: Microsoft.Databricks/workspaces
+    options:
+      dependsOn:
+        - ${spokeVnet}
+        - ${privateNsg}
+
+  # Databricks public subnet
+  publicSubnet:
+    type: azure-native:network:Subnet
+    properties:
+      subnetName: databricks-public
+      resourceGroupName: ${resourceGroup.name}
+      virtualNetworkName: ${spokeVnet.name}
+      addressPrefix: "10.1.1.0/24"  # Second /24 of spoke CIDR
+      networkSecurityGroup:
+        id: ${publicNsg.id}
+      delegations:
+        - name: databricks-delegation
+          serviceName: Microsoft.Databricks/workspaces
+    options:
+      dependsOn:
+        - ${spokeVnet}
+        - ${publicNsg}
+        - ${privateSubnet}
+
+  # VNet peering to hub
+  spokeToHubPeering:
+    type: azure-native:network:VirtualNetworkPeering
+    properties:
+      virtualNetworkPeeringName: spoke-to-hub
+      resourceGroupName: ${resourceGroup.name}
+      virtualNetworkName: ${spokeVnet.name}
+      remoteVirtualNetwork:
+        id: ${hubVnetId}
+      allowVirtualNetworkAccess: true
+      allowForwardedTraffic: true
+      allowGatewayTransit: false
+      useRemoteGateways: false
+    options:
+      dependsOn:
+        - ${spokeVnet}
+
+  # Databricks Workspace
+  databricksWorkspace:
+    type: azure-native:databricks:Workspace
+    properties:
+      workspaceName: dbw-${teamName}-${environment}
+      resourceGroupName: ${resourceGroup.name}
+      location: ${location}
+      managedResourceGroupId: /subscriptions/${azure-native:subscriptionId}/resourceGroups/rg-dbw-managed-${teamName}-${environment}
+      sku:
+        name: premium
+      publicNetworkAccess: Disabled
+      parameters:
+        customVirtualNetworkId:
+          value: ${spokeVnet.id}
+        customPrivateSubnetName:
+          value: databricks-private
+        customPublicSubnetName:
+          value: databricks-public
+        enableNoPublicIp:
+          value: true
+      tags: ${tags}
+    options:
+      dependsOn:
+        - ${privateSubnet}
+        - ${publicSubnet}
+
+# Outputs
+outputs:
+  workspaceUrl: ${databricksWorkspace.workspaceUrl}
+  workspaceId: ${databricksWorkspace.workspaceId}
+  resourceGroupName: ${resourceGroup.name}
+  vnetId: ${spokeVnet.id}
+  teamName: ${teamName}
+  environment: ${environment}

@@ -1,0 +1,10 @@
+# Stack configuration for Team Beta (Analytics Engineering)
+# Different subscription, different CIDR - same golden path
+environment:
+  - azure-data/spoke-team-beta
+config:
+  team-onboarding:teamName: team-beta
+  team-onboarding:environment: dev
+  team-onboarding:costCenter: CC-ANALYTICS-002
+  team-onboarding:spokeCidr: "10.2.0.0/16"
+  team-onboarding:hubStackRef: demo/hub-network/dev

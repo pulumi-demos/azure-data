@@ -1,0 +1,14 @@
+name: team-onboarding
+description: |
+  Golden path stack for onboarding new teams to the Azure Data Platform.
+  Uses the DatabricksWorkspaceComponent to provision compliant, network-isolated
+  Databricks workspaces with hub/spoke connectivity.
+runtime:
+  name: python
+  options:
+    virtualenv: venv
+
+# Reference the private registry component
+# This will be available after publishing the component
+# packages:
+#   databricks-workspace: github.com/pulumi-demos/azure-data/components/databricks-workspace

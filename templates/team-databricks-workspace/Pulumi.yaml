@@ -1,0 +1,32 @@
+name: ${PROJECT}
+description: |
+  Databricks workspace for team ${TEAM_NAME}.
+  Provisioned via the Azure Data Platform golden path template.
+runtime: yaml
+
+# Template metadata for Pulumi New Project Wizard
+template:
+  displayName: Team Databricks Workspace
+  description: |
+    Provision a compliant, network-isolated Databricks workspace for your team.
+    Includes VNet injection, hub/spoke peering, and compliance tagging.
+  config:
+    teamName:
+      description: Your team name (e.g., data-science, analytics)
+      default: my-team
+    environment:
+      description: Environment (dev, staging, prod)
+      default: dev
+    costCenter:
+      description: Cost center code for chargeback
+      default: CC-UNASSIGNED
+    spokeCidr:
+      description: Network CIDR for your spoke VNet (e.g., 10.1.0.0/16)
+      default: "10.1.0.0/16"
+    location:
+      description: Azure region
+      default: westeurope
+
+# Reference the private registry component
+packages:
+  databricks-workspace: github.com/pulumi-demos/azure-data/components/databricks-workspace

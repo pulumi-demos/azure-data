@@ -1,0 +1,8 @@
+name: azure-compliance
+description: |
+  Azure compliance policy pack for the Data & Analytics platform.
+  Enforces tagging, network isolation, and naming conventions.
+runtime:
+  name: python
+  options:
+    virtualenv: venv

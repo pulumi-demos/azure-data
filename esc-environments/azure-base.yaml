@@ -1,0 +1,46 @@
+# ESC Environment: azure-base
+# Purpose: Base Azure credentials using OIDC (no static secrets)
+# Usage: Import this environment in all Azure-related stacks
+#
+# This environment provides:
+# - Azure OIDC authentication (short-lived tokens, no stored secrets)
+# - ARM environment variables for Pulumi Azure Native provider
+# - Pulumi config for azure-native provider
+#
+# Prerequisites:
+# 1. Azure AD App Registration with federated credentials configured for Pulumi
+# 2. Service Principal with appropriate RBAC roles
+# 3. Trust relationship configured in Azure AD for Pulumi OIDC
+
+values:
+  # Azure OIDC Login - generates short-lived tokens
+  azure:
+    login:
+      fn::open::azure-login:
+        clientId: ${azure.clientId}           # App Registration Client ID
+        tenantId: ${azure.tenantId}           # Azure AD Tenant ID
+        subscriptionId: ${azure.subscriptionId}  # Default subscription
+        oidc: true
+
+  # Configuration - override these in child environments
+  azure:
+    # These should be set via pulumi config or overridden in child environments
+    clientId: "YOUR_CLIENT_ID"      # Replace with actual App Registration Client ID
+    tenantId: "YOUR_TENANT_ID"      # Replace with actual Azure AD Tenant ID
+    subscriptionId: "YOUR_DEFAULT_SUBSCRIPTION_ID"  # Replace with default subscription
+
+  # Environment variables for Azure CLI and Terraform-style tools
+  environmentVariables:
+    ARM_USE_OIDC: "true"
+    ARM_CLIENT_ID: ${azure.login.clientId}
+    ARM_TENANT_ID: ${azure.login.tenantId}
+    ARM_OIDC_TOKEN: ${azure.login.oidc.token}
+    ARM_SUBSCRIPTION_ID: ${azure.login.subscriptionId}
+
+  # Pulumi config for azure-native provider
+  pulumiConfig:
+    azure-native:useOidc: true
+    azure-native:clientId: ${azure.login.clientId}
+    azure-native:tenantId: ${azure.login.tenantId}
+    azure-native:subscriptionId: ${azure.login.subscriptionId}
+    azure-native:oidcToken: ${azure.login.oidc.token}

@@ -1,0 +1,4 @@
+environment:
+  - azure-data/azure-base
+config:
+  entra-id:environment: dev

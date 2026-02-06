@@ -1,0 +1,22 @@
+# ESC Environment: spoke-team-beta
+# Purpose: Spoke configuration for Team Beta (Analytics Engineering)
+# Usage: pulumi config env add azure-data/spoke-team-beta
+
+imports:
+  - spoke-template
+
+values:
+  spoke:
+    teamName: "team-beta"
+    subscriptionId: "bbbbbbbb-cccc-dddd-eeee-ffffffffffff"
+    network:
+      cidr: "10.2.0.0/16"
+      databricksPrivateCidr: "10.2.0.0/24"
+      databricksPublicCidr: "10.2.1.0/24"
+    environment: "dev"
+    costCenter: "CC-ANALYTICS-002"
+
+  pulumiConfig:
+    team:name: "Analytics Engineering Team Beta"
+    team:owner: "bob@example.com"
+    team:slack: "#team-beta-infra"
