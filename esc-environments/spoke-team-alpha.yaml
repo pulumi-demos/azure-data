@@ -10,15 +10,15 @@
 
 imports:
   # Inherit from spoke template (which inherits azure-base and hub-network)
-  - spoke-template
+  - azure-data/spoke-template
 
 values:
   # Team Alpha specific configuration
   spoke:
     teamName: "team-alpha"
     
-    # Team Alpha's dedicated subscription
-    subscriptionId: "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"
+    # Team Alpha's dedicated subscription (single sub for demo)
+    subscriptionId: "32b9cb2e-69be-4040-80a6-02cd6b2cc5ec"
     
     # Network allocation for Team Alpha
     network:
@@ -32,8 +32,14 @@ values:
     # Cost center for Team Alpha
     costCenter: "CC-DATA-SCIENCE-001"
 
-  # Additional team-specific config
+  # Override pulumiConfig (parent interpolations don't pick up child overrides)
   pulumiConfig:
+    azure-native:subscriptionId: ${spoke.subscriptionId}
+    spoke:teamName: ${spoke.teamName}
+    spoke:subscriptionId: ${spoke.subscriptionId}
+    spoke:networkCidr: ${spoke.network.cidr}
+    spoke:environment: ${spoke.environment}
+    spoke:costCenter: ${spoke.costCenter}
     team:name: "Data Science Team Alpha"
     team:owner: "alice@example.com"
     team:slack: "#team-alpha-infra"

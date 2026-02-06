@@ -48,6 +48,6 @@ pulumi up
 Spoke stacks can reference hub outputs:
 
 ```python
-hub_stack = pulumi.StackReference("demo/hub-network/dev")
+hub_stack = pulumi.StackReference("demo/azure-data-hub-network/dev")
 hub_vnet_id = hub_stack.get_output("vnetId")
 ```

@@ -1,0 +1,6 @@
+{
+  "resource": true,
+  "name": "pulumi-resource-databricks-workspace",
+  "version": "0.0.1",
+  "server": "git://github.com/pulumi-demos/azure-data.git/components/databricks-workspace"
+}

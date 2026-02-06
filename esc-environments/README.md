@@ -44,17 +44,10 @@ The `spoke-template` and team-specific environments demonstrate:
 
 ```bash
 # Create the environments in Pulumi Cloud
-pulumi env init demo/azure-data/azure-base
-pulumi env edit demo/azure-data/azure-base --file ./azure-base.yaml
-
-pulumi env init demo/azure-data/hub-network
-pulumi env edit demo/azure-data/hub-network --file ./hub-network.yaml
-
-pulumi env init demo/azure-data/spoke-template
-pulumi env edit demo/azure-data/spoke-template --file ./spoke-template.yaml
-
-pulumi env init demo/azure-data/spoke-team-alpha
-pulumi env edit demo/azure-data/spoke-team-alpha --file ./spoke-team-alpha.yaml
+pulumi env init demo/azure-data/azure-base -f ./azure-base.yaml
+pulumi env init demo/azure-data/hub-network -f ./hub-network.yaml
+pulumi env init demo/azure-data/spoke-template -f ./spoke-template.yaml
+pulumi env init demo/azure-data/spoke-team-alpha -f ./spoke-team-alpha.yaml
 ```
 
 ### Linking to Stacks

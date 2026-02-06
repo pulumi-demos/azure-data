@@ -76,10 +76,14 @@ workspace = DatabricksWorkspaceComponent("analytics",
 # azure-base.yaml - Short-lived tokens via OIDC
 values:
   azure:
+    clientId: "YOUR_CLIENT_ID"
+    tenantId: "YOUR_TENANT_ID"
+    subscriptionId: "YOUR_DEFAULT_SUBSCRIPTION_ID"
     login:
       fn::open::azure-login:
         clientId: ${azure.clientId}
         tenantId: ${azure.tenantId}
+        subscriptionId: ${azure.subscriptionId}
         oidc: true
 ```
 
@@ -87,7 +91,7 @@ values:
 
 ```python
 # Get hub VNet ID from another stack
-hub_stack = StackReference("demo/hub-network/dev")
+hub_stack = StackReference("demo/azure-data-hub-network/dev")
 hub_vnet_id = hub_stack.get_output("vnetId")
 ```
 
@@ -121,49 +125,6 @@ Developer 1 → Creates PR → Preview runs
 Developer 2 → Reviews PR → Approves
 Pipeline    → Merges     → Deploys
 ```
-
-## Demo Flow
-
-### Part 1: Show the Problem (5 min)
-
-- "Today it takes 1-2 quarters to onboard a new team"
-- "Teams copy-paste infrastructure code"
-- "No consistent compliance or tagging"
-
-### Part 2: Show the Solution (20 min)
-
-1. **Component**: Show `DatabricksWorkspaceComponent.cs`
-   - "Write once, use from any language"
-   - "Compliance baked in"
-
-2. **ESC**: Show environment hierarchy
-   - "OIDC - no static secrets"
-   - "Subscription as parameter"
-
-3. **Golden Path**: Run `pulumi preview` on team-onboarding
-   - "One stack config per team"
-   - "Stack references for hub connectivity"
-
-4. **Policies**: Show policy pack
-   - "Python - readable, testable"
-   - "Blocks non-compliant deployments"
-
-5. **Template**: Show no-code YAML template
-   - "New Project Wizard"
-   - "Teams don't write code"
-
-6. **Azure DevOps**: Show pipeline
-   - "Four-eyes principle"
-   - "Preview on PR, deploy on merge"
-
-### Part 3: Show the Impact (5 min)
-
-| Before | After |
-|--------|-------|
-| 1-2 quarters | ~30 minutes |
-| Copy-paste | Import component |
-| Manual compliance | Policy as code |
-| Multiple onboardings | One golden path |
 
 ## Running the Demo
 
@@ -203,31 +164,6 @@ pulumi up
 | Entra ID | Free | App registrations |
 
 **Tip**: Run `pulumi destroy` after demo to avoid ongoing costs.
-
-## For the Presentation
-
-### Key Messages
-
-1. **Developer Experience**: "Teams write 10 lines, not 200"
-2. **Maintainability**: "Components are versioned, tested once"
-3. **Flexibility**: "Subscription as parameter enables scale"
-4. **Governance**: "Python policies are readable and testable"
-5. **Migration**: "Reference existing Bicep resources"
-
-### Questions to Anticipate
-
-- "How long to build a component?" → "Days, not weeks"
-- "Can we use existing VNets?" → "Yes, show hub-network pattern"
-- "How do policies work?" → "Python, runs on preview"
-- "What about secrets?" → "ESC with OIDC, no static secrets"
-
-## Next Steps After Demo
-
-1. Publish component to private registry
-2. Create ESC environments in Pulumi Cloud
-3. Configure Azure DevOps pipeline
-4. Onboard first team as pilot
-5. Iterate based on feedback
 
 ## Support
 

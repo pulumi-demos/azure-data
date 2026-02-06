@@ -68,6 +68,15 @@ def validate_required_tags(
     if not args.resource_type.startswith("azure-native:"):
         return
 
+    # Skip resources that don't support tags in Azure
+    TAGLESS_RESOURCE_TYPES = [
+        "azure-native:network:Subnet",
+        "azure-native:network:VirtualNetworkPeering",
+        "azure-native:network:SecurityRule",
+    ]
+    if args.resource_type in TAGLESS_RESOURCE_TYPES:
+        return
+
     # Get tags from resource properties
     tags = args.props.get("tags", {})
     
@@ -361,10 +370,6 @@ def validate_stack_has_databricks(
     This is an example of a stack-level policy that validates
     the overall structure of the deployment.
     """
-    # Only check team-onboarding stacks
-    if "team-onboarding" not in args.stack:
-        return
-
     has_databricks = any(
         r.resource_type == "azure-native:databricks:Workspace"
         for r in args.resources
@@ -389,7 +394,7 @@ stack_has_databricks_policy = StackValidationPolicy(
 # =============================================================================
 
 PolicyPack(
-    name="azure-compliance",
+    name="azure-data-compliance",
     enforcement_level=EnforcementLevel.MANDATORY,
     policies=[
         # Tagging policies

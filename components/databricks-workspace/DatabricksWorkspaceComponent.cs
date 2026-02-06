@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Pulumi;
-using Pulumi.AzureNative.Resources;
 using Pulumi.AzureNative.Network;
-using Pulumi.AzureNative.Network.Inputs;
+using NetworkInputs = Pulumi.AzureNative.Network.Inputs;
+using AzureResources = Pulumi.AzureNative.Resources;
 using AzureDatabricks = Pulumi.AzureNative.Databricks;
 
 namespace DatabricksWorkspace;
@@ -12,7 +12,7 @@ namespace DatabricksWorkspace;
 /// This component creates a compliant, network-isolated Databricks workspace
 /// following enterprise best practices for the Data & Analytics platform.
 /// </summary>
-public sealed class DatabricksWorkspaceComponentArgs : ResourceArgs
+public sealed class DatabricksWorkspaceComponentArgs : Pulumi.ResourceArgs
 {
     /// <summary>
     /// The name of the team or project that owns this workspace.
@@ -179,27 +179,16 @@ public class DatabricksWorkspaceComponent : ComponentResource
         var costCenter = args.CostCenter ?? "unassigned";
 
         // Build compliance tags - these are mandatory for all resources
-        var baseTags = new InputMap<string>
-        {
-            { "team", teamName },
-            { "environment", environment },
-            { "cost-center", costCenter },
-            { "managed-by", "pulumi" },
-            { "component", "databricks-workspace" },
-        };
-
-        // Merge with user-provided tags
-        if (args.Tags != null)
-        {
-            // User tags are added but cannot override compliance tags
-            foreach (var tag in args.Tags)
-            {
-                baseTags.Add(tag.Key, tag.Value);
-            }
-        }
+        // User-provided tags are included, but compliance tags always take precedence
+        var baseTags = args.Tags ?? new InputMap<string>();
+        baseTags["team"] = teamName;
+        baseTags["environment"] = environment;
+        baseTags["cost-center"] = costCenter;
+        baseTags["managed-by"] = "pulumi";
+        baseTags["component"] = "databricks-workspace";
 
         // Create the resource group for the workspace
-        var resourceGroup = new ResourceGroup($"{name}-rg", new ResourceGroupArgs
+        var resourceGroup = new AzureResources.ResourceGroup($"{name}-rg", new AzureResources.ResourceGroupArgs
         {
             ResourceGroupName = Output.Format($"rg-dbw-{teamName}-{environment}"),
             Location = location,
@@ -212,7 +201,7 @@ public class DatabricksWorkspaceComponent : ComponentResource
             VirtualNetworkName = Output.Format($"vnet-dbw-{teamName}-{environment}"),
             ResourceGroupName = resourceGroup.Name,
             Location = location,
-            AddressSpace = new AddressSpaceArgs
+            AddressSpace = new NetworkInputs.AddressSpaceArgs
             {
                 AddressPrefixes = new[] { spokeCidr },
             },
@@ -261,10 +250,10 @@ public class DatabricksWorkspaceComponent : ComponentResource
             ResourceGroupName = resourceGroup.Name,
             VirtualNetworkName = vnet.Name,
             AddressPrefix = privateSubnetCidr,
-            NetworkSecurityGroup = new SubResourceArgs { Id = privateNsg.Id },
+            NetworkSecurityGroup = new NetworkInputs.NetworkSecurityGroupArgs { Id = privateNsg.Id },
             Delegations = new[]
             {
-                new DelegationArgs
+                new NetworkInputs.DelegationArgs
                 {
                     Name = "databricks-delegation",
                     ServiceName = "Microsoft.Databricks/workspaces",
@@ -279,10 +268,10 @@ public class DatabricksWorkspaceComponent : ComponentResource
             ResourceGroupName = resourceGroup.Name,
             VirtualNetworkName = vnet.Name,
             AddressPrefix = publicSubnetCidr,
-            NetworkSecurityGroup = new SubResourceArgs { Id = publicNsg.Id },
+            NetworkSecurityGroup = new NetworkInputs.NetworkSecurityGroupArgs { Id = publicNsg.Id },
             Delegations = new[]
             {
-                new DelegationArgs
+                new NetworkInputs.DelegationArgs
                 {
                     Name = "databricks-delegation",
                     ServiceName = "Microsoft.Databricks/workspaces",
@@ -298,7 +287,7 @@ public class DatabricksWorkspaceComponent : ComponentResource
                 VirtualNetworkPeeringName = "spoke-to-hub",
                 ResourceGroupName = resourceGroup.Name,
                 VirtualNetworkName = vnet.Name,
-                RemoteVirtualNetwork = new Pulumi.AzureNative.Network.Inputs.SubResourceArgs
+                RemoteVirtualNetwork = new NetworkInputs.SubResourceArgs
                 {
                     Id = args.HubVnetId,
                 },
@@ -311,7 +300,7 @@ public class DatabricksWorkspaceComponent : ComponentResource
 
         // Build the managed resource group ID
         var managedRgName = Output.Format($"rg-dbw-managed-{teamName}-{environment}");
-        var managedRgId = Output.Tuple(subscriptionId, managedRgName).Apply(t =>
+        var managedRgId = Output.Tuple<string, string>((Input<string>)subscriptionId, (Input<string>)managedRgName).Apply(t =>
             $"/subscriptions/{t.Item1}/resourceGroups/{t.Item2}");
 
         // Create the Databricks workspace with VNet injection
@@ -325,9 +314,12 @@ public class DatabricksWorkspaceComponent : ComponentResource
             {
                 Name = skuTier,
             },
-            PublicNetworkAccess = enablePublicAccess
+            PublicNetworkAccess = enablePublicAccess.Apply(v => v
                 ? AzureDatabricks.PublicNetworkAccess.Enabled
-                : AzureDatabricks.PublicNetworkAccess.Disabled,
+                : AzureDatabricks.PublicNetworkAccess.Disabled),
+            RequiredNsgRules = enablePublicAccess.Apply(v => v
+                ? AzureDatabricks.RequiredNsgRules.AllRules
+                : AzureDatabricks.RequiredNsgRules.NoAzureDatabricksRules),
             Parameters = new AzureDatabricks.Inputs.WorkspaceCustomParametersArgs
             {
                 CustomVirtualNetworkId = new AzureDatabricks.Inputs.WorkspaceCustomStringParameterArgs
@@ -344,7 +336,7 @@ public class DatabricksWorkspaceComponent : ComponentResource
                 },
                 EnableNoPublicIp = new AzureDatabricks.Inputs.WorkspaceCustomBooleanParameterArgs
                 {
-                    Value = !enablePublicAccess,
+                    Value = enablePublicAccess.Apply(v => !v),
                 },
             },
             Tags = baseTags,

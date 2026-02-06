@@ -33,7 +33,7 @@ variables:
   - name: PULUMI_ORG
     value: 'demo'
   - name: PULUMI_PROJECT
-    value: 'team-onboarding'
+    value: 'azure-data-team-onboarding'
   - name: PULUMI_STACK
     value: 'team-alpha'
   - name: WORKING_DIRECTORY

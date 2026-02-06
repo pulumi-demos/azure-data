@@ -58,7 +58,7 @@ variables:
   - name: PULUMI_ORG
     value: 'your-org'
   - name: PULUMI_PROJECT
-    value: 'team-onboarding'
+    value: 'azure-data-team-onboarding'
   - name: PULUMI_STACK
     value: 'team-alpha'
 ```

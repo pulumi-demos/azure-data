@@ -3,8 +3,13 @@
 environment:
   - azure-data/spoke-team-beta
 config:
-  team-onboarding:teamName: team-beta
-  team-onboarding:environment: dev
-  team-onboarding:costCenter: CC-ANALYTICS-002
-  team-onboarding:spokeCidr: "10.2.0.0/16"
-  team-onboarding:hubStackRef: demo/hub-network/dev
+  azure-data-team-onboarding:teamName: team-beta
+  azure-data-team-onboarding:environment: dev
+  azure-data-team-onboarding:costCenter: CC-ANALYTICS-002
+  azure-data-team-onboarding:spokeCidr: "10.2.0.0/16"
+  azure-data-team-onboarding:hubStackRef: demo/azure-data-hub-network/dev
+
+  # Entra ID auth: use Azure CLI (OIDC SP lacks directory permissions)
+  # Must explicitly disable OIDC since ESC injects ARM_USE_OIDC env var
+  azuread:useCli: "true"
+  azuread:useOidc: "false"

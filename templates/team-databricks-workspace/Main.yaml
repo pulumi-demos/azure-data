@@ -27,7 +27,7 @@ configuration:
     default: westeurope
   hubStackRef:
     type: String
-    default: demo/hub-network/dev
+    default: demo/azure-data-hub-network/dev
   azure-native:subscriptionId:
     type: String
 
@@ -154,6 +154,7 @@ resources:
       sku:
         name: premium
       publicNetworkAccess: Disabled
+      requiredNsgRules: NoAzureDatabricksRules
       parameters:
         customVirtualNetworkId:
           value: ${spokeVnet.id}

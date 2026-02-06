@@ -4,12 +4,17 @@ environment:
   - azure-data/spoke-team-alpha
 config:
   # Team-specific configuration (inherited from ESC, can be overridden)
-  team-onboarding:teamName: team-alpha
-  team-onboarding:environment: dev
-  team-onboarding:costCenter: CC-DATA-SCIENCE-001
+  azure-data-team-onboarding:teamName: team-alpha
+  azure-data-team-onboarding:environment: dev
+  azure-data-team-onboarding:costCenter: CC-DATA-SCIENCE-001
   
   # Network configuration
-  team-onboarding:spokeCidr: "10.1.0.0/16"
+  azure-data-team-onboarding:spokeCidr: "10.1.0.0/16"
   
   # Hub stack reference for peering
-  team-onboarding:hubStackRef: demo/hub-network/dev
+  azure-data-team-onboarding:hubStackRef: demo/azure-data-hub-network/dev
+
+  # Entra ID auth: use Azure CLI (OIDC SP lacks directory permissions)
+  # Must explicitly disable OIDC since ESC injects ARM_USE_OIDC env var
+  azuread:useCli: "true"
+  azuread:useOidc: "false"

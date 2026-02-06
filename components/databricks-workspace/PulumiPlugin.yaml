@@ -1,1 +1,3 @@
+name: databricks-workspace
+version: 0.0.1
 runtime: dotnet

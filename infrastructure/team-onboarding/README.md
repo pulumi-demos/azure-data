@@ -19,7 +19,7 @@ For each team, this stack provisions:
 The stack references the hub-network stack to get the hub VNet ID for peering:
 
 ```python
-hub_stack = StackReference("demo/hub-network/dev")
+hub_stack = StackReference("demo/azure-data-hub-network/dev")
 hub_vnet_id = hub_stack.get_output("vnetId")
 ```
 
@@ -49,6 +49,24 @@ base_tags = {
 ### 4. Entra ID Integration
 
 Creates app registration and service principal for Databricks access.
+
+## Auth Note
+
+This stack creates both Azure ARM resources (via `azure-native`) and Entra ID resources
+(via `azuread`). The OIDC service principal used by ESC has Contributor/Owner on the
+subscription but lacks Entra ID directory permissions (`Application.ReadWrite.All`).
+
+As a workaround, the `azuread` provider is configured to use Azure CLI auth so it
+inherits the logged-in user's member permissions for app registration creation.
+This is set in the stack config:
+
+```yaml
+azuread:useCli: "true"
+azuread:useOidc: "false"
+```
+
+To remove this workaround, grant the OIDC SP the `Application Administrator` Entra ID
+directory role or `Application.ReadWrite.All` Graph API permission (requires Global Admin).
 
 ## Usage
 

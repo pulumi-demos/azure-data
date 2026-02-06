@@ -14,7 +14,7 @@
 
 imports:
   # Inherit Azure credentials
-  - azure-base
+  - azure-data/azure-base
 
 values:
   # Hub network configuration

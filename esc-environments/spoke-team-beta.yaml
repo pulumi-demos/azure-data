@@ -3,12 +3,12 @@
 # Usage: pulumi config env add azure-data/spoke-team-beta
 
 imports:
-  - spoke-template
+  - azure-data/spoke-template
 
 values:
   spoke:
     teamName: "team-beta"
-    subscriptionId: "bbbbbbbb-cccc-dddd-eeee-ffffffffffff"
+    subscriptionId: "32b9cb2e-69be-4040-80a6-02cd6b2cc5ec"
     network:
       cidr: "10.2.0.0/16"
       databricksPrivateCidr: "10.2.0.0/24"
@@ -16,7 +16,14 @@ values:
     environment: "dev"
     costCenter: "CC-ANALYTICS-002"
 
+  # Override pulumiConfig (parent interpolations don't pick up child overrides)
   pulumiConfig:
+    azure-native:subscriptionId: ${spoke.subscriptionId}
+    spoke:teamName: ${spoke.teamName}
+    spoke:subscriptionId: ${spoke.subscriptionId}
+    spoke:networkCidr: ${spoke.network.cidr}
+    spoke:environment: ${spoke.environment}
+    spoke:costCenter: ${spoke.costCenter}
     team:name: "Analytics Engineering Team Beta"
     team:owner: "bob@example.com"
     team:slack: "#team-beta-infra"

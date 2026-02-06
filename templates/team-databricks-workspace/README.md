@@ -54,7 +54,7 @@ pulumi new https://github.com/pulumi-demos/azure-data/templates/team-databricks-
 | `costCenter` | Cost center for chargeback | CC-UNASSIGNED |
 | `spokeCidr` | Network CIDR for spoke VNet | 10.1.0.0/16 |
 | `location` | Azure region | westeurope |
-| `hubStackRef` | Hub network stack reference | demo/hub-network/dev |
+| `hubStackRef` | Hub network stack reference | demo/azure-data-hub-network/dev |
 
 ## What Gets Created
 

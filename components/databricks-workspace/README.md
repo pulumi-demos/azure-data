@@ -152,8 +152,10 @@ dotnet build
 ## Publishing to Private Registry
 
 ```bash
-# Build and publish
-pulumi package publish github.com/pulumi-demos/azure-data/components/databricks-workspace
+# Build and publish (requires DOTNET_ROOT set for Homebrew .NET installs)
+pulumi package publish components/databricks-workspace/bin/Debug/net10.0/pulumi-resource-databricks-workspace \
+  --readme components/databricks-workspace/README.md \
+  --publisher demo
 ```
 
 ## Cost Estimate

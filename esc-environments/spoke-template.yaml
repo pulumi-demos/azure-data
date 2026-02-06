@@ -13,8 +13,8 @@
 
 imports:
   # Inherit Azure credentials and hub network config
-  - azure-base
-  - hub-network
+  - azure-data/azure-base
+  - azure-data/hub-network
 
 values:
   # Spoke configuration - OVERRIDE THESE IN TEAM-SPECIFIC ENVIRONMENTS

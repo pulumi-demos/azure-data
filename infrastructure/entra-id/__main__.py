@@ -85,7 +85,7 @@ pulumi_federated_credential = azuread.ApplicationFederatedIdentityCredential(
     # Pulumi Cloud OIDC issuer
     issuer="https://api.pulumi.com/oidc",
     # Subject format: pulumi:deploy:org:<org>:project:<project>:stack:<stack>
-    subject=f"pulumi:deploy:org:demo:project:team-onboarding:stack:*",
+    subject=f"pulumi:deploy:org:demo:project:azure-data-team-onboarding:stack:*",
     audiences=["api://AzureADTokenExchange"],
 )
 
