@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using Pulumi;
-using Pulumi.AzureNative.Resources;
 using Pulumi.AzureNative.Network;
 using Pulumi.AzureNative.Network.Inputs;
+using AzureResources = Pulumi.AzureNative.Resources;
 using AzureDatabricks = Pulumi.AzureNative.Databricks;
 
 namespace DatabricksWorkspace;
@@ -12,7 +12,7 @@ namespace DatabricksWorkspace;
 /// This component creates a compliant, network-isolated Databricks workspace
 /// following enterprise best practices for the Data & Analytics platform.
 /// </summary>
-public sealed class DatabricksWorkspaceComponentArgs : ResourceArgs
+public sealed class DatabricksWorkspaceComponentArgs : Pulumi.ResourceArgs
 {
     /// <summary>
     /// The name of the team or project that owns this workspace.
@@ -199,7 +199,7 @@ public class DatabricksWorkspaceComponent : ComponentResource
         }
 
         // Create the resource group for the workspace
-        var resourceGroup = new ResourceGroup($"{name}-rg", new ResourceGroupArgs
+        var resourceGroup = new AzureResources.ResourceGroup($"{name}-rg", new AzureResources.ResourceGroupArgs
         {
             ResourceGroupName = Output.Format($"rg-dbw-{teamName}-{environment}"),
             Location = location,
