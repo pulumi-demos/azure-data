@@ -4,3 +4,6 @@
 [submodule "components/azure-data-team-entra"]
 	path = components/azure-data-team-entra
 	url = https://github.com/pulumi-demos/azure-data-team-entra.git
+[submodule "templates/azure-data-team-onboarding"]
+	path = templates/azure-data-team-onboarding
+	url = https://github.com/pulumi-demos/azure-data-team-onboarding.git
