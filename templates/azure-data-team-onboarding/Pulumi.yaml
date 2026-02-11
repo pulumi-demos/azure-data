@@ -10,7 +10,6 @@ packages:
 
 # Template metadata for Pulumi New Project Wizard
 template:
-#  displayName: Azure Data Team Onboarding
   description: |
     Provision a compliant, network-isolated Databricks workspace with Entra ID
     service principal for your team. Includes VNet injection, hub/spoke peering,
