@@ -141,7 +141,7 @@ class DatabricksWorkspaceComponentArgs:
         pulumi.set(self, "tags", value)
 
 
-@pulumi.type_token("pulumi-resource-databricks-workspace:index:DatabricksWorkspaceComponent")
+@pulumi.type_token("azure-data-databricks-workspace:index:DatabricksWorkspaceComponent")
 class DatabricksWorkspaceComponent(pulumi.ComponentResource):
     @overload
     def __init__(__self__,
@@ -231,7 +231,7 @@ class DatabricksWorkspaceComponent(pulumi.ComponentResource):
             __props__.__dict__["workspace_id"] = None
             __props__.__dict__["workspace_url"] = None
         super(DatabricksWorkspaceComponent, __self__).__init__(
-            'pulumi-resource-databricks-workspace:index:DatabricksWorkspaceComponent',
+            'azure-data-databricks-workspace:index:DatabricksWorkspaceComponent',
             resource_name,
             __props__,
             opts,

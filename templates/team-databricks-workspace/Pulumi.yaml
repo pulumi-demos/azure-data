@@ -29,4 +29,4 @@ template:
 
 # Reference the private registry component
 packages:
-  databricks-workspace: github.com/pulumi-demos/azure-data/components/databricks-workspace
+  databricks-workspace: github.com/pulumi-demos/azure-data-databricks-workspace@v0.0.2

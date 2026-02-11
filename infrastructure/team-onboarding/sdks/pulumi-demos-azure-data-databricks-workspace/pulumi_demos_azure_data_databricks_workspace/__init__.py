@@ -13,11 +13,11 @@ _utilities.register(
     resource_modules="""
 [
  {
-  "pkg": "pulumi-resource-databricks-workspace",
+  "pkg": "azure-data-databricks-workspace",
   "mod": "index",
-  "fqn": "pulumi_demos_pulumi_resource_databricks_workspace",
+  "fqn": "pulumi_demos_azure_data_databricks_workspace",
   "classes": {
-   "pulumi-resource-databricks-workspace:index:DatabricksWorkspaceComponent": "DatabricksWorkspaceComponent"
+   "azure-data-databricks-workspace:index:DatabricksWorkspaceComponent": "DatabricksWorkspaceComponent"
   }
  }
 ]
@@ -25,9 +25,9 @@ _utilities.register(
     resource_packages="""
 [
  {
-  "pkg": "pulumi-resource-databricks-workspace",
-  "token": "pulumi:providers:pulumi-resource-databricks-workspace",
-  "fqn": "pulumi_demos_pulumi_resource_databricks_workspace",
+  "pkg": "azure-data-databricks-workspace",
+  "token": "pulumi:providers:azure-data-databricks-workspace",
+  "fqn": "pulumi_demos_azure_data_databricks_workspace",
   "class": "Provider"
  }
 ]

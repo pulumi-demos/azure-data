@@ -18,7 +18,7 @@ Key Concepts Demonstrated:
 
 import pulumi
 from pulumi import Config, StackReference, export
-import pulumi_pulumi_resource_databricks_workspace as dbw
+import pulumi_demos_azure_data_databricks_workspace as dbw
 import pulumi_azuread as azuread
 
 # =============================================================================

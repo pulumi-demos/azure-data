@@ -8,4 +8,4 @@ runtime:
   options:
     virtualenv: venv
 packages:
-  pulumi-resource-databricks-workspace: github.com/pulumi-demos/azure-data.git/components/databricks-workspace@v0.0.1
+      azure-data-databricks-workspace: github.com/pulumi-demos/azure-data-databricks-workspace@v0.0.2

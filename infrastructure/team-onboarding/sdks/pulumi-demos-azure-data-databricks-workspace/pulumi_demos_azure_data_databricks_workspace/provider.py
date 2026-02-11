@@ -25,7 +25,7 @@ class ProviderArgs:
         pass
 
 
-@pulumi.type_token("pulumi:providers:pulumi-resource-databricks-workspace")
+@pulumi.type_token("pulumi:providers:azure-data-databricks-workspace")
 class Provider(pulumi.ProviderResource):
     @overload
     def __init__(__self__,
@@ -33,7 +33,7 @@ class Provider(pulumi.ProviderResource):
                  opts: Optional[pulumi.ResourceOptions] = None,
                  __props__=None):
         """
-        Create a Pulumi-resource-databricks-workspace resource with the given unique name, props, and options.
+        Create a Azure-data-databricks-workspace resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param pulumi.ResourceOptions opts: Options for the resource.
         """
@@ -44,7 +44,7 @@ class Provider(pulumi.ProviderResource):
                  args: Optional[ProviderArgs] = None,
                  opts: Optional[pulumi.ResourceOptions] = None):
         """
-        Create a Pulumi-resource-databricks-workspace resource with the given unique name, props, and options.
+        Create a Azure-data-databricks-workspace resource with the given unique name, props, and options.
         :param str resource_name: The name of the resource.
         :param ProviderArgs args: The arguments to use to populate this resource's properties.
         :param pulumi.ResourceOptions opts: Options for the resource.
@@ -70,7 +70,7 @@ class Provider(pulumi.ProviderResource):
             __props__ = ProviderArgs.__new__(ProviderArgs)
 
         super(Provider, __self__).__init__(
-            'pulumi-resource-databricks-workspace',
+            'azure-data-databricks-workspace',
             resource_name,
             __props__,
             opts)

@@ -9,23 +9,23 @@ from setuptools.command.install import install
 from subprocess import check_call
 
 
-VERSION = "0.0.0"
+VERSION = "0.0.2"
 def readme():
     try:
         with open('README.md', encoding='utf-8') as f:
             return f.read()
     except FileNotFoundError:
-        return "pulumi-resource-databricks-workspace Pulumi Package - Development Version"
+        return "azure-data-databricks-workspace Pulumi Package - Development Version"
 
 
-setup(name='pulumi_pulumi_resource_databricks_workspace',
+setup(name='pulumi_demos_azure_data_databricks_workspace',
       python_requires='>=3.9',
       version=VERSION,
       long_description=readme(),
       long_description_content_type='text/markdown',
       packages=find_packages(),
       package_data={
-          'pulumi_pulumi_resource_databricks_workspace': [
+          'pulumi_demos_azure_data_databricks_workspace': [
               'py.typed',
               'pulumi-plugin.json',
           ]
