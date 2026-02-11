@@ -1,13 +1,6 @@
 name: ${PROJECT}
 description: ${DESCRIPTION}
-runtime:
-  name: python
-  options:
-    virtualenv: venv
-packages:
-  azure-data-databricks-workspace: github.com/pulumi-demos/azure-data-databricks-workspace@v0.0.2
-  azure-data-team-entra: github.com/pulumi-demos/azure-data-team-entra@v0.1.1
-
+runtime: python
 # Template metadata for Pulumi New Project Wizard
 template:
   description: |
@@ -33,3 +26,6 @@ template:
     hubStackRef:
       description: Pulumi stack reference for the hub network (org/project/stack)
       default: demo/azure-data-hub-network/dev
+packages:
+  azure-data-databricks-workspace: github.com/pulumi-demos/azure-data-databricks-workspace@v0.0.2
+  azure-data-team-entra: github.com/pulumi-demos/azure-data-team-entra@v0.1.1
