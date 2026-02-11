@@ -8,4 +8,5 @@ runtime:
   options:
     virtualenv: venv
 packages:
-      azure-data-databricks-workspace: github.com/pulumi-demos/azure-data-databricks-workspace@v0.0.2
+  azure-data-databricks-workspace: github.com/pulumi-demos/azure-data-databricks-workspace@v0.0.2
+  azure-data-team-entra: github.com/pulumi-demos/azure-data-team-entra@v0.1.0

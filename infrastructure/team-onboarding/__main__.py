@@ -19,6 +19,7 @@ Key Concepts Demonstrated:
 import pulumi
 from pulumi import Config, StackReference, export
 import pulumi_demos_azure_data_databricks_workspace as dbw
+import pulumi_demos_azure_data_team_entra as entra
 import pulumi_azuread as azuread
 
 # =============================================================================
@@ -78,31 +79,18 @@ workspace = dbw.DatabricksWorkspaceComponent("workspace",
 )
 
 # =============================================================================
-# Entra ID / App Registration (Service Principal)
+# Entra ID / App Registration (via published component)
 # =============================================================================
 
-# Create an app registration for Databricks access
-# This demonstrates Entra ID integration for service principal management
+# The TeamEntraComponent encapsulates:
+# - Entra ID Application (app registration)
+# - Service Principal bound to the application
+# - Client secret with configurable rotation
 current_client = azuread.get_client_config()
-app_registration = azuread.Application(
-    "databricks-app",
-    display_name=f"sp-dbw-{team_name}-{environment}",
+identity = entra.TeamEntraComponent("identity",
+    team_name=team_name,
+    environment=environment,
     owners=[current_client.object_id],
-)
-
-# Create service principal from app registration
-service_principal = azuread.ServicePrincipal(
-    "databricks-sp",
-    client_id=app_registration.client_id,
-)
-
-# Create a client secret for the service principal
-# In production, consider using federated credentials instead
-sp_password = azuread.ApplicationPassword(
-    "databricks-sp-password",
-    application_id=app_registration.id,
-    display_name=f"Databricks access for {team_name}",
-    end_date_relative="8760h",  # 1 year
 )
 
 # =============================================================================
@@ -122,11 +110,11 @@ export("vnetId", workspace.network_config.apply(lambda nc: nc.vnet_id))
 export("privateSubnetId", workspace.network_config.apply(lambda nc: nc.private_subnet_id))
 export("publicSubnetId", workspace.network_config.apply(lambda nc: nc.public_subnet_id))
 
-# Service principal outputs (for Databricks access)
-export("servicePrincipalId", service_principal.id)
-export("servicePrincipalClientId", app_registration.client_id)
+# Service principal outputs (from component)
+export("servicePrincipalId", identity.service_principal_id)
+export("servicePrincipalClientId", identity.client_id)
 # Note: Password is a secret, access via `pulumi stack output --show-secrets`
-export("servicePrincipalPassword", pulumi.Output.secret(sp_password.value))
+export("servicePrincipalPassword", identity.service_principal_password)
 
 # Metadata
 export("teamName", team_name)

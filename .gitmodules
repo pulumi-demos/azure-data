@@ -1,3 +1,6 @@
 [submodule "components/azure-data-databricks-workspace"]
 	path = components/azure-data-databricks-workspace
 	url = https://github.com/pulumi-demos/azure-data-databricks-workspace.git
+[submodule "components/azure-data-team-entra"]
+	path = components/azure-data-team-entra
+	url = https://github.com/pulumi-demos/azure-data-team-entra.git

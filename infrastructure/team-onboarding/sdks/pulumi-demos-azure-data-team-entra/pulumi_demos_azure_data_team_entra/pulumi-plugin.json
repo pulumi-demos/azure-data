@@ -1,0 +1,6 @@
+{
+  "resource": true,
+  "name": "azure-data-team-entra",
+  "version": "0.1.0",
+  "server": "git://github.com/pulumi-demos/azure-data-team-entra"
+}
