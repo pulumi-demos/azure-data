@@ -64,7 +64,8 @@ location = hub_location.apply(lambda loc: loc if loc else "westeurope")
 # - VNet peering to hub for shared services connectivity
 # - Databricks workspace with VNet injection and no public IP
 # - Compliance tags applied to all resources
-workspace = dbw.DatabricksWorkspaceComponent("workspace",
+workspace = dbw.DatabricksWorkspaceComponent(
+    "workspace",
     team_name=team_name,
     location=location,
     subscription_id=subscription_id,
@@ -75,6 +76,7 @@ workspace = dbw.DatabricksWorkspaceComponent("workspace",
     tags={
         "project": "azure-data-platform",
         "onboarding-stack": "team-onboarding",
+        "data-classification": "internal",
     },
 )
 
@@ -87,7 +89,8 @@ workspace = dbw.DatabricksWorkspaceComponent("workspace",
 # - Service Principal bound to the application
 # - Client secret with configurable rotation
 current_client = azuread.get_client_config()
-identity = entra.TeamEntraComponent("identity",
+identity = entra.TeamEntraComponent(
+    "identity",
     team_name=team_name,
     environment=environment,
     owners=[current_client.object_id],
@@ -107,7 +110,9 @@ export("managedResourceGroupName", workspace.managed_resource_group_name)
 
 # Network outputs (from component)
 export("vnetId", workspace.network_config.apply(lambda nc: nc.vnet_id))
-export("privateSubnetId", workspace.network_config.apply(lambda nc: nc.private_subnet_id))
+export(
+    "privateSubnetId", workspace.network_config.apply(lambda nc: nc.private_subnet_id)
+)
 export("publicSubnetId", workspace.network_config.apply(lambda nc: nc.public_subnet_id))
 
 # Service principal outputs (from component)
