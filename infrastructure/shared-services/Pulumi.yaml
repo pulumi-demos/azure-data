@@ -1,0 +1,6 @@
+name: azure-data-shared-services
+description: Shared services infrastructure (Key Vault, Log Analytics, Managed Identity) - migrated from Bicep
+runtime:
+  name: python
+  options:
+    virtualenv: venv

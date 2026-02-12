@@ -1,0 +1,8 @@
+environment:
+  # Provides Azure OIDC credentials via azure-base
+  - azure-data/azure-base
+config:
+  # Stack-specific inputs consumed by __main__.py
+  azure-data-shared-services:location: westeurope
+  azure-data-shared-services:environment: dev
+  azure-data-shared-services:prefix: demo
