@@ -128,6 +128,55 @@ valid_environment_policy = ResourceValidationPolicy(
     validate=validate_environment_tag,
 )
 
+
+# Valid data classification levels
+VALID_DATA_CLASSIFICATIONS = ["public", "internal", "confidential", "restricted"]
+
+
+def validate_data_classification_tag(
+    args: ResourceValidationArgs, report_violation: ReportViolation
+):
+    """
+    Recommend a data-classification tag on all Azure resources.
+
+    Valid values: public, internal, confidential, restricted.
+    This is advisory — it warns but does not block deployment.
+    """
+    if not args.resource_type.startswith("azure-native:"):
+        return
+
+    TAGLESS_RESOURCE_TYPES = [
+        "azure-native:network:Subnet",
+        "azure-native:network:VirtualNetworkPeering",
+        "azure-native:network:SecurityRule",
+    ]
+    if args.resource_type in TAGLESS_RESOURCE_TYPES:
+        return
+
+    tags = args.props.get("tags", {})
+    if tags is None:
+        tags = {}
+
+    classification = tags.get("data-classification")
+    if not classification:
+        report_violation(
+            f"Resource '{args.name}' is missing the 'data-classification' tag. "
+            f"Recommended values: {', '.join(VALID_DATA_CLASSIFICATIONS)}"
+        )
+    elif classification not in VALID_DATA_CLASSIFICATIONS:
+        report_violation(
+            f"Resource '{args.name}' has invalid data-classification '{classification}'. "
+            f"Valid values are: {', '.join(VALID_DATA_CLASSIFICATIONS)}"
+        )
+
+
+data_classification_tag_policy = ResourceValidationPolicy(
+    name="data-classification-tag",
+    description="Recommend data-classification tag on all Azure resources (public, internal, confidential, restricted)",
+    enforcement_level=EnforcementLevel.ADVISORY,
+    validate=validate_data_classification_tag,
+)
+
 # =============================================================================
 # Network Isolation Policies
 # =============================================================================
@@ -400,6 +449,7 @@ PolicyPack(
         # Tagging policies
         required_tags_policy,
         valid_environment_policy,
+        data_classification_tag_policy,
         # Network isolation policies
         no_public_ip_policy,
         databricks_vnet_injection_policy,
