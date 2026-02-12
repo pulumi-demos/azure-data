@@ -24,7 +24,7 @@ param addressSpace string = '10.0.0.0/16'
 var tags = {
   environment: environment
   'managed-by': 'bicep'
-  project: 'azure-data-platform'
+  project: 'shared'
   component: 'hub-network'
 }
 
