@@ -25,6 +25,7 @@ class DatabricksWorkspaceComponentArgs:
                  subscription_id: pulumi.Input[_builtins.str],
                  team_name: pulumi.Input[_builtins.str],
                  cost_center: Optional[pulumi.Input[_builtins.str]] = None,
+                 data_classification: Optional[pulumi.Input[_builtins.str]] = None,
                  enable_public_access: Optional[pulumi.Input[_builtins.bool]] = None,
                  environment: Optional[pulumi.Input[_builtins.str]] = None,
                  hub_vnet_id: Optional[pulumi.Input[_builtins.str]] = None,
@@ -39,6 +40,8 @@ class DatabricksWorkspaceComponentArgs:
         pulumi.set(__self__, "team_name", team_name)
         if cost_center is not None:
             pulumi.set(__self__, "cost_center", cost_center)
+        if data_classification is not None:
+            pulumi.set(__self__, "data_classification", data_classification)
         if enable_public_access is not None:
             pulumi.set(__self__, "enable_public_access", enable_public_access)
         if environment is not None:
@@ -96,6 +99,15 @@ class DatabricksWorkspaceComponentArgs:
         pulumi.set(self, "cost_center", value)
 
     @_builtins.property
+    @pulumi.getter(name="dataClassification")
+    def data_classification(self) -> Optional[pulumi.Input[_builtins.str]]:
+        return pulumi.get(self, "data_classification")
+
+    @data_classification.setter
+    def data_classification(self, value: Optional[pulumi.Input[_builtins.str]]):
+        pulumi.set(self, "data_classification", value)
+
+    @_builtins.property
     @pulumi.getter(name="enablePublicAccess")
     def enable_public_access(self) -> Optional[pulumi.Input[_builtins.bool]]:
         return pulumi.get(self, "enable_public_access")
@@ -148,6 +160,7 @@ class DatabricksWorkspaceComponent(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cost_center: Optional[pulumi.Input[_builtins.str]] = None,
+                 data_classification: Optional[pulumi.Input[_builtins.str]] = None,
                  enable_public_access: Optional[pulumi.Input[_builtins.bool]] = None,
                  environment: Optional[pulumi.Input[_builtins.str]] = None,
                  hub_vnet_id: Optional[pulumi.Input[_builtins.str]] = None,
@@ -187,6 +200,7 @@ class DatabricksWorkspaceComponent(pulumi.ComponentResource):
                  resource_name: str,
                  opts: Optional[pulumi.ResourceOptions] = None,
                  cost_center: Optional[pulumi.Input[_builtins.str]] = None,
+                 data_classification: Optional[pulumi.Input[_builtins.str]] = None,
                  enable_public_access: Optional[pulumi.Input[_builtins.bool]] = None,
                  environment: Optional[pulumi.Input[_builtins.str]] = None,
                  hub_vnet_id: Optional[pulumi.Input[_builtins.str]] = None,
@@ -208,6 +222,7 @@ class DatabricksWorkspaceComponent(pulumi.ComponentResource):
             __props__ = DatabricksWorkspaceComponentArgs.__new__(DatabricksWorkspaceComponentArgs)
 
             __props__.__dict__["cost_center"] = cost_center
+            __props__.__dict__["data_classification"] = data_classification
             __props__.__dict__["enable_public_access"] = enable_public_access
             __props__.__dict__["environment"] = environment
             __props__.__dict__["hub_vnet_id"] = hub_vnet_id
@@ -229,6 +244,7 @@ class DatabricksWorkspaceComponent(pulumi.ComponentResource):
             __props__.__dict__["network_config"] = None
             __props__.__dict__["resource_group_name"] = None
             __props__.__dict__["workspace_id"] = None
+            __props__.__dict__["workspace_name"] = None
             __props__.__dict__["workspace_url"] = None
         super(DatabricksWorkspaceComponent, __self__).__init__(
             'azure-data-databricks-workspace:index:DatabricksWorkspaceComponent',
@@ -256,6 +272,11 @@ class DatabricksWorkspaceComponent(pulumi.ComponentResource):
     @pulumi.getter(name="workspaceId")
     def workspace_id(self) -> pulumi.Output[_builtins.str]:
         return pulumi.get(self, "workspace_id")
+
+    @_builtins.property
+    @pulumi.getter(name="workspaceName")
+    def workspace_name(self) -> pulumi.Output[_builtins.str]:
+        return pulumi.get(self, "workspace_name")
 
     @_builtins.property
     @pulumi.getter(name="workspaceUrl")

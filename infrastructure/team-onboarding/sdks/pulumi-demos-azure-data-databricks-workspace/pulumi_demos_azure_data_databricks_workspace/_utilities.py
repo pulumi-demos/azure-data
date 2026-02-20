@@ -328,4 +328,4 @@ def get_plugin_download_url():
 	return "git://github.com/pulumi-demos/azure-data-databricks-workspace"
 
 def get_version():
-    return "0.0.2"
+    return "0.0.4"

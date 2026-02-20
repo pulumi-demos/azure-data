@@ -58,7 +58,8 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-07-01' = {
     enableRbacAuthorization: true
     enableSoftDelete: true
     softDeleteRetentionInDays: 7
-    enablePurgeProtection: false // keep false for easy demo cleanup
+    // enablePurgeProtection omitted — defaults to false on new vaults,
+    // but cannot be explicitly set to false on existing ones.
     networkAcls: {
       defaultAction: 'Allow' // tighten in prod
       bypass: 'AzureServices'

@@ -16,16 +16,16 @@ values:
   # Azure OIDC configuration and login
   azure:
     # These should be set via pulumi config or overridden in child environments
-    clientId: "YOUR_CLIENT_ID"      # Placeholder (not used by OIDC login)
-    tenantId: "YOUR_TENANT_ID"      # Placeholder (not used by OIDC login)
-    subscriptionId: "YOUR_DEFAULT_SUBSCRIPTION_ID"  # Placeholder (not used by OIDC login)
+    clientId: "caba809c-897d-437c-bc03-ae72dd2fb724"      # Placeholder (not used by OIDC login)
+    tenantId: "706143bc-e1d4-4593-aee2-c9dc60ab9be7"      # Placeholder (not used by OIDC login)
+    subscriptionId: "32b9cb2e-69be-4040-80a6-02cd6b2cc5ec"  # Placeholder (not used by OIDC login)
     # OIDC Login - generates short-lived tokens
     # Real credentials are hardcoded here (not interpolated from placeholders above)
     login:
       fn::open::azure-login:
-        clientId: caba809c-897d-437c-bc03-ae72dd2fb724
-        tenantId: 706143bc-e1d4-4593-aee2-c9dc60ab9be7
-        subscriptionId: 32b9cb2e-69be-4040-80a6-02cd6b2cc5ec
+        clientId: ${azure.clientId} 
+        tenantId: ${azure.tenantId}
+        subscriptionId: ${azure.subscriptionId}
         oidc: true
 
   # Environment variables for Azure CLI and Terraform-style tools

@@ -1,0 +1,42 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "components", "components", "{F30895DC-C3AC-FF44-FFF8-D51D98AE1B61}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure-data-databricks-workspace", "azure-data-databricks-workspace", "{55505206-4423-636B-EBE6-0D2AE0DBC8B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DatabricksWorkspace", "components\azure-data-databricks-workspace\DatabricksWorkspace.csproj", "{8683D85A-8013-0CC9-A7F2-944F8E8E0441}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "azure-data-team-entra", "azure-data-team-entra", "{BD26B0A7-761D-EB9C-D593-F30E226D4AD4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeamEntra", "components\azure-data-team-entra\TeamEntra.csproj", "{7D4A5F62-9AB6-EC8D-99F4-DD74EC7C7683}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8683D85A-8013-0CC9-A7F2-944F8E8E0441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8683D85A-8013-0CC9-A7F2-944F8E8E0441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8683D85A-8013-0CC9-A7F2-944F8E8E0441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8683D85A-8013-0CC9-A7F2-944F8E8E0441}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D4A5F62-9AB6-EC8D-99F4-DD74EC7C7683}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D4A5F62-9AB6-EC8D-99F4-DD74EC7C7683}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D4A5F62-9AB6-EC8D-99F4-DD74EC7C7683}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D4A5F62-9AB6-EC8D-99F4-DD74EC7C7683}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{55505206-4423-636B-EBE6-0D2AE0DBC8B2} = {F30895DC-C3AC-FF44-FFF8-D51D98AE1B61}
+		{8683D85A-8013-0CC9-A7F2-944F8E8E0441} = {55505206-4423-636B-EBE6-0D2AE0DBC8B2}
+		{BD26B0A7-761D-EB9C-D593-F30E226D4AD4} = {F30895DC-C3AC-FF44-FFF8-D51D98AE1B61}
+		{7D4A5F62-9AB6-EC8D-99F4-DD74EC7C7683} = {BD26B0A7-761D-EB9C-D593-F30E226D4AD4}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {CCD6BB7D-22A9-46AA-8A7A-303BE978E3D4}
+	EndGlobalSection
+EndGlobal
