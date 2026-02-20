@@ -1,5 +1,5 @@
 name: azure-data-compliance
-version: 0.0.4
+version: 0.0.5
 description: |
   Azure compliance policy pack for the Data & Analytics platform.
   Enforces tagging, network isolation, and naming conventions.

@@ -439,6 +439,114 @@ stack_has_databricks_policy = StackValidationPolicy(
 )
 
 # =============================================================================
+# Component Version Policies
+# =============================================================================
+
+import re
+import subprocess
+from typing import List, Tuple
+
+COMPONENT_REPO = "https://github.com/pulumi-demos/azure-data-databricks-workspace.git"
+
+
+def parse_semver(version: str) -> Tuple[int, ...]:
+    """Parse a version string into a comparable tuple."""
+    return tuple(int(x) for x in version.split("."))
+
+
+def get_component_versions() -> List[str]:
+    """
+    Resolve all published versions of the databricks-workspace component
+    by reading git tags from the component repository.
+    Returns versions sorted descending (latest first).
+    """
+    versions = []
+    try:
+        result = subprocess.run(
+            ["git", "ls-remote", "--tags", COMPONENT_REPO],
+            capture_output=True, text=True, timeout=10,
+        )
+        if result.returncode == 0:
+            for line in result.stdout.strip().splitlines():
+                ref = line.split("refs/tags/")[-1]
+                if re.match(r"^v\d+\.\d+\.\d+$", ref):
+                    versions.append(ref.lstrip("v"))
+    except Exception:
+        pass
+    versions.sort(key=parse_semver, reverse=True)
+    return versions or ["0.0.4"]
+
+
+# Resolve once at policy pack load time
+COMPONENT_VERSIONS = get_component_versions()
+LATEST_VERSION = COMPONENT_VERSIONS[0]
+PREVIOUS_VERSION = COMPONENT_VERSIONS[1] if len(COMPONENT_VERSIONS) > 1 else None
+
+
+def validate_component_version_mandatory(
+    args: StackValidationArgs, report_violation: ReportViolation
+):
+    """
+    Block deployments using component versions older than latest-1.
+
+    Teams get one version of grace period to upgrade. Anything older
+    than the previous version is a mandatory violation.
+    """
+    allowed = {LATEST_VERSION}
+    if PREVIOUS_VERSION:
+        allowed.add(PREVIOUS_VERSION)
+
+    for r in args.resources:
+        if r.resource_type != "pulumi:providers:azure-data-databricks-workspace":
+            continue
+
+        version = r.props.get("version", "unknown")
+        if version not in allowed:
+            report_violation(
+                f"Databricks workspace component version '{version}' is no longer supported. "
+                f"Minimum required version is v{PREVIOUS_VERSION or LATEST_VERSION}. "
+                f"Upgrade in your Pulumi.yaml: "
+                f"github.com/pulumi-demos/azure-data-databricks-workspace@v{LATEST_VERSION}"
+            )
+
+
+def validate_component_version_advisory(
+    args: StackValidationArgs, report_violation: ReportViolation
+):
+    """
+    Warn when a stack is one version behind the latest.
+
+    This gives teams visibility that a newer version is available
+    without blocking their deployment.
+    """
+    for r in args.resources:
+        if r.resource_type != "pulumi:providers:azure-data-databricks-workspace":
+            continue
+
+        version = r.props.get("version", "unknown")
+        if version == PREVIOUS_VERSION:
+            report_violation(
+                f"Databricks workspace component version '{version}' is one version behind. "
+                f"Latest is v{LATEST_VERSION}. Plan your upgrade: "
+                f"github.com/pulumi-demos/azure-data-databricks-workspace@v{LATEST_VERSION}"
+            )
+
+
+component_version_mandatory_policy = StackValidationPolicy(
+    name="component-version-supported",
+    description="Block deployments using databricks-workspace component versions older than latest-1",
+    enforcement_level=EnforcementLevel.MANDATORY,
+    validate=validate_component_version_mandatory,
+)
+
+component_version_advisory_policy = StackValidationPolicy(
+    name="component-version-current",
+    description="Warn when databricks-workspace component is not on the latest version",
+    enforcement_level=EnforcementLevel.ADVISORY,
+    validate=validate_component_version_advisory,
+)
+
+# =============================================================================
 # Policy Pack Registration
 # =============================================================================
 
@@ -462,5 +570,8 @@ PolicyPack(
         databricks_premium_sku_policy,
         # Stack policies
         stack_has_databricks_policy,
+        # Component lifecycle policies
+        component_version_mandatory_policy,
+        component_version_advisory_policy,
     ],
 )
